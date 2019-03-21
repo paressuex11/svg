@@ -109,7 +109,7 @@ void build_vector(node* root, vector<node*>* leaves) {
 }
 void build_x(node* root)
 {
-
+	//build x×ø±êÓÃ
 }
 
 int main() {
