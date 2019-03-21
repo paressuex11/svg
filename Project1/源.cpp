@@ -107,6 +107,10 @@ void build_vector(node* root, vector<node*>* leaves) {
 		build_vector(root->nodes[i], leaves);
 	}
 }
+void build_x(node* root)
+{
+
+}
 
 int main() {
 
