@@ -25,8 +25,9 @@ string get_word(const string & str);
 class node {
 public:
 	static vector<node*> leaves;
-	int x;
-	int y;
+	static vector<node*> no_leaves;
+	double x;
+	double y;
 	string value;
 	string label;
 	string word;
@@ -36,7 +37,8 @@ public:
 	bool whether_dad;
 	bool whether_leaf;
 	node(const string& value, int rank) {
-		int x = 0;
+		this->x = 0;
+		this->y = 0;
 		this->value = value;
 		this->child_number = 0;
 		this->rank = rank;
@@ -77,6 +79,7 @@ public:
 	}
 
 };
+vector<node*> node::no_leaves;
 vector<node*> node::leaves;
 string get_word(const string & str) {
 	int left = str.find(' ');
@@ -96,22 +99,41 @@ void build_tree(node* root) {
 	}
 }
 void print_tree(node* root) {
-	cout << root->word << endl;
+	cout << root->x << '\t' << root->y << endl;
 	for (int i = 0; i < root->child_number; ++i) {
 		print_tree(root->nodes[i]);
 	}
 }
-void build_vector(node* root, vector<node*>* leaves) {
+void build_vector(node* root, vector<node*>* leaves, vector<node*>* no_leaves) {
 	if (root->whether_leaf) leaves->push_back(root);
+	else no_leaves->push_back(root);
 	for (int i = 0; i < root->child_number; ++i) {
-		build_vector(root->nodes[i], leaves);
+		build_vector(root->nodes[i], leaves, no_leaves);
 	}
 }
-void build_x(node* root)
+void build_x()
 {
-
+	int max_rank = 0;
+	for (int i = 0; i < node::leaves.size(); ++i) {
+		node::leaves[i]->x = 1.0  * (i + 1) / node::leaves.size();
+		node::leaves[i]->y = 1.0 / (node::leaves[i]->rank) * node::leaves[i]->rank;
+		if (node::leaves[i]->rank > max_rank) max_rank = node::leaves[i]->rank;
+	}
+	while (!node::no_leaves.empty())
+	{
+		node* no_leaf = node::no_leaves[node::no_leaves.size() - 1];
+		no_leaf->y = 1.0 / (max_rank) * no_leaf->rank;
+		cout << no_leaf->label<<endl;
+		node::no_leaves.pop_back();
+		for (int i = 0; i < no_leaf->child_number; ++i) {
+			no_leaf->x += no_leaf->nodes[i]->x; 
+		}
+		no_leaf->x = no_leaf->x * 1.0 / no_leaf->child_number;
+	}
+	
 	//build x×ø±êÓÃ
 }
+
 
 int main() {
 
@@ -119,10 +141,9 @@ int main() {
 
 	node root(str, 1);
 	build_tree(&root);
-	build_vector(&root, &node::leaves);
-	for (node* nodee : node::leaves) {
-		cout << nodee->label << endl;
-	}
+	build_vector(&root, &node::leaves, &node::no_leaves);
+	build_x();
+	print_tree(&root);
 	system("pause");
 	return 0;
 }
