@@ -89,9 +89,10 @@ public:
 		replace(rect, "%x", to_string(this->x * 100) + "%");
 		replace(rect, "%y", to_string(this->y * 100) + "%");
 		replace(rect, "%z", to_string(this->label.length() * 9));
-		string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">of</text>";
+		string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">" +this->label+  "</text>";
 		replace(text, "%x", to_string(this->x * 100) + "%");
-		cout << rect;
+		replace(text, "%y", to_string(this->y * 100  + 17.0 / 7) + "%");
+		cout << rect + text;
 	}
 
 };
@@ -130,11 +131,11 @@ void build_vector(node* root, vector<node*>* leaves, vector<node*>* no_leaves) {
 void build_x()
 {
 	int max_rank = 0;
-	double offset = 0.00001;
+	double offset = 0.000001;
 	double off = 1.0 / node::leaves.size();
 
-	while (off - offset  > 0.005) {
-		offset += 0.001;
+	while (off - offset  > 0.0005) {
+		offset += 0.0001;
 	}
 	for (int i = 0; i < node::leaves.size(); ++i) {
 		node::leaves[i]->x = 1.0  * (i + 1) / node::leaves.size() - offset;
@@ -165,7 +166,7 @@ void build_html(node* root) {
 
 int main() {
 
-	string str = "(SBARQ (WHADJP (WRB How) (JJ many)) (S (NNS customers) (VP (VBP have) (NP (DT an) (NN account)))) (. ?))";
+	string str = "(SBARQ (WHNP (WP What)) (SQ (VBZ is) (NP (NX (DT the) (JJ average) (NNS sales) (IN of) (DT the) (NNS journals) (WHNP (WDT that)) (NX (VBP have) (NP (DT an) (NN editor)) (WHADVP (WHNP (WP$ whose) (NX (NN work) (NN type))) (VBZ is) (`` ``)))) (NP (NNP Photo)) ('' ''))) (. ?))";
 
 	node root(str, 1);
 	build_tree(&root);
