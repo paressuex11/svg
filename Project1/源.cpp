@@ -4,7 +4,14 @@
 
 using namespace std;
 
-
+void replace(string& str, const string& str1,const string& str2) {
+	size_t left = str.find(str1);
+	if (left == string::npos) {
+		cout << "not found";
+		return;
+	}
+	str.replace(left, str1.length(), str2);
+}
 string get_next_child(const string &str) {
 	string result = "";
 	int left = str.find('(', 1);
@@ -77,6 +84,15 @@ public:
 			}
 		}
 	}
+	void build_svg() {
+		string rect = "<rect x = \"%x\" y = \"%y\" height = \"17\" width = \"%z\" style = \"fill:url(#grlue)\" />";
+		replace(rect, "%x", to_string(this->x * 100) + "%");
+		replace(rect, "%y", to_string(this->y * 100) + "%");
+		replace(rect, "%z", to_string(this->label.length() * 9));
+		string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">of</text>";
+		replace(text, "%x", to_string(this->x * 100) + "%");
+		cout << rect;
+	}
 
 };
 vector<node*> node::no_leaves;
@@ -114,16 +130,23 @@ void build_vector(node* root, vector<node*>* leaves, vector<node*>* no_leaves) {
 void build_x()
 {
 	int max_rank = 0;
+	double offset = 0.00001;
+	double off = 1.0 / node::leaves.size();
+
+	while (off - offset  > 0.005) {
+		offset += 0.001;
+	}
 	for (int i = 0; i < node::leaves.size(); ++i) {
-		node::leaves[i]->x = 1.0  * (i + 1) / node::leaves.size();
-		node::leaves[i]->y = 1.0 / (node::leaves[i]->rank) * node::leaves[i]->rank;
+		node::leaves[i]->x = 1.0  * (i + 1) / node::leaves.size() - offset;
 		if (node::leaves[i]->rank > max_rank) max_rank = node::leaves[i]->rank;
+	}
+	for (int i = 0; i < node::leaves.size(); ++i) {
+		node::leaves[i]->y = 1.0  * node::leaves[i]->rank / max_rank - 0.1;
 	}
 	while (!node::no_leaves.empty())
 	{
 		node* no_leaf = node::no_leaves[node::no_leaves.size() - 1];
-		no_leaf->y = 1.0 / (max_rank) * no_leaf->rank;
-		cout << no_leaf->label<<endl;
+		no_leaf->y = 1.0 / (max_rank) * no_leaf->rank - 0.1;
 		node::no_leaves.pop_back();
 		for (int i = 0; i < no_leaf->child_number; ++i) {
 			no_leaf->x += no_leaf->nodes[i]->x; 
@@ -133,7 +156,12 @@ void build_x()
 	
 	//build x×ø±êÓÃ
 }
-
+void build_html(node* root) {
+	root->build_svg();
+	for (int i = 0; i < root->child_number; ++i) {
+		build_html(root->nodes[i]);
+	}
+}
 
 int main() {
 
@@ -143,7 +171,20 @@ int main() {
 	build_tree(&root);
 	build_vector(&root, &node::leaves, &node::no_leaves);
 	build_x();
-	print_tree(&root);
+	
+	
+	cout << R"(<html><svg id = "svg" xmlns = "http://www.w3.org/2000/svg" height = "100%" width = "100%" version = "1.1">)";
+	cout << R"(<defs>
+                    <linearGradient id="grlue" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:rgb(25,255,0);
+                    stop-opacity:1"/>
+                    <stop offset="100%" style="stop-color:rgb(0,255,255);
+                    stop-opacity:1"/>
+                    </linearGradient>
+                    </defs>)";
+
+	build_html(&root);
+	cout << R"(</svg></html>)";
 	system("pause");
 	return 0;
 }
