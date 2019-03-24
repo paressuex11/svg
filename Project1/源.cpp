@@ -1,6 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <string>
 #include <vector>
+#include<fstream>
 #define max(a, b) (a >= b ? a : b)
 using namespace std;
 const int view_x = 1100;
@@ -42,7 +44,7 @@ public:
 	string label;
 	string word;
 	int node_length;
-	node* nodes[10];
+	node* nodes[100];
 	int rank;
 	int child_number;
 	bool whether_dad;
@@ -136,6 +138,10 @@ public:
 			cout << linee;
 		}
 	}
+	void init() {
+		node::leaves.clear();
+		node::no_leaves.clear();
+	}
 
 };
 vector<node*> node::no_leaves;
@@ -218,17 +224,23 @@ void build_lines(node* root) {
 }
 
 int main() {
+	fstream input("C:/Users/11385/Desktop/project1/input.txt");
+	for (int i = 0; i < 20; ++i) {
+		string str = "";
+		getline(input, str);
+		if (str == "") continue;
+		string filename = "C:/Users/11385/Desktop/a" + to_string(i) + ".html";
+		freopen(filename.c_str(), "w", stdout);
+		
+		/*string str = "(S (S (VP (VB Show) (NP (DT all) (NX (NN card) (NN type) (NNS codes))))) (. .))";*/
+		node root(str, 1);
+		build_tree(&root);
+		build_vector(&root, &node::leaves, &node::no_leaves);
+		build_x();
 
-	string str = "(SBARQ (WHNP (WRB How) (JJ much)) (SQ (VBZ is) (NP (NP (DT the) (NN track)) (NP (NNP Fast) (PP (IN As) (NP (DT a) (NNP Shark)))))) (. ?))";
-	/*string str = "(S (S (VP (VB Show) (NP (DT all) (NX (NN card) (NN type) (NNS codes))))) (. .))";*/
-	node root(str, 1);
-	build_tree(&root);
-	build_vector(&root, &node::leaves, &node::no_leaves);
-	build_x();
-	
-	
-	cout << R"(<html><svg id = "svg" xmlns = "http://www.w3.org/2000/svg" height = "100%" width = "100%" version = "1.1">)";
-	cout << R"(<defs>
+
+		cout << R"(<html><svg id = "svg" xmlns = "http://www.w3.org/2000/svg" height = "100%" width = "100%" version = "1.1">)";
+		cout << R"(<defs>
                     <linearGradient id="grlue" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style="stop-color:rgb(25,255,0);
                     stop-opacity:1"/>
@@ -236,9 +248,12 @@ int main() {
                     stop-opacity:1"/>
                     </linearGradient>
                     </defs>)";
-	build_lines(&root);
-	build_html(&root);
-	cout << R"(</svg></html>)";
+		build_lines(&root);
+		build_html(&root);
+		cout << R"(</svg></html>)";
+		root.init();
+		
+	}
 	system("pause");
 	return 0;
 }
