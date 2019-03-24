@@ -85,14 +85,26 @@ public:
 		}
 	}
 	void build_svg() {
-		string rect = "<rect x = \"%x\" y = \"%y\" height = \"17\" width = \"%z\" style = \"fill:url(#grlue)\" />";
+		string rect = "<rect x = \"%x\" y = \"%y\" height = \"17\" fill-opacity=\"0.7\"  stroke-width=\"3\" stroke = \"#00FF00\" width = \"%z\" style = \"fill:url(#grlue)\" />";
+		
 		replace(rect, "%x", to_string(this->x * 100) + "%");
 		replace(rect, "%y", to_string(this->y * 100) + "%");
 		replace(rect, "%z", to_string(this->label.length() * 9));
 		string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">" +this->label+  "</text>";
-		replace(text, "%x", to_string(this->x * 100) + "%");
+		replace(text, "%x", to_string(this->x * 100 ) + "%");
 		replace(text, "%y", to_string(this->y * 100  + 17.0 / 7) + "%");
 		cout << rect + text;
+	}
+	void build_lines() {
+		string line = "<line stroke=\"#67C23A\" stroke-width=\"3\" stroke-opacity=\"0.6\" x1=\"%x1\" y1=\"%y1\" x2=\"%x2\" y2=\"%y2\"/>";
+		replace(line, "%x1", to_string(this->x * 100 + this->label.length() * 4.5 / 11.5) + "%");
+		replace(line, "%y1", to_string(this->y * 100 + 17.0 / 7) + "%");
+		for (int i = 0; i < this->child_number; ++i) {
+			string linee = line;
+			replace(linee, "%x2", to_string(this->nodes[i]->x * 100) + "%");
+			replace(linee, "%y2", to_string(this->nodes[i]->y * 100 + 17.0 / 7) + "%");
+			cout << linee;
+		}
 	}
 
 };
@@ -163,11 +175,17 @@ void build_html(node* root) {
 		build_html(root->nodes[i]);
 	}
 }
+void build_lines(node* root) {
+	root->build_lines();
+	for (int i = 0; i < root->child_number; ++i) {
+		build_lines(root->nodes[i]);
+	}
+}
 
 int main() {
 
 	string str = "(SBARQ (WHNP (WP What)) (SQ (VBZ is) (NP (NX (DT the) (JJ average) (NNS sales) (IN of) (DT the) (NNS journals) (WHNP (WDT that)) (NX (VBP have) (NP (DT an) (NN editor)) (WHADVP (WHNP (WP$ whose) (NX (NN work) (NN type))) (VBZ is) (`` ``)))) (NP (NNP Photo)) ('' ''))) (. ?))";
-
+	/*string str = "(S (S (VP (VB Show) (NP (DT all) (NX (NN card) (NN type) (NNS codes))))) (. .))";*/
 	node root(str, 1);
 	build_tree(&root);
 	build_vector(&root, &node::leaves, &node::no_leaves);
@@ -183,7 +201,7 @@ int main() {
                     stop-opacity:1"/>
                     </linearGradient>
                     </defs>)";
-
+	build_lines(&root);
 	build_html(&root);
 	cout << R"(</svg></html>)";
 	system("pause");
