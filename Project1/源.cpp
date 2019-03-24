@@ -101,7 +101,7 @@ public:
 		replace(rect, "%y", to_string(this->y ));
 		replace(rect, "%z", to_string(this->node_length * char_width));
 		string word = "";
-		int width = char_width;
+		int width = char_lower_width;
 		if (this->word != "") {
 			word = "<rect x = \"%x\" y = \"%y\" height = \"17\" fill-opacity=\"0.9\"  stroke-width=\"3\" stroke = \"#00FF00\" width = \"%z\" style = \"fill:url(#grlue)\" />";
 			replace(word, "%x", to_string(this->x ) );
@@ -109,7 +109,7 @@ public:
 			replace(word, "%z", to_string(this->node_length * 10));
 			string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">" + this->word + "</text>";
 			for (char c : this->word) {
-				if (c <= 'z' && c >= 'a' || c == '\'' || c == ',') width = char_lower_width;
+				if (c <= 'Z' && c >= 'A' ) width = char_width;
 				break;
 			}
 			replace(text, "%x", to_string(this->x + this->node_length*char_width / 2.0 - this->word.length()*width / 2.0));
@@ -117,7 +117,7 @@ public:
 			cout << word + text;
 		}
 		for (char c : this->label) {
-			if (c <= 'z' && c >= 'a' || c == '\'' || c == ',') width = char_lower_width;
+			if (c <= 'Z' && c >= 'A') width = char_width;
 			break;
 		}
 		string text = "<text font-size=\"12\" x=\"%x\" y=\"%y\" fill=\"#000000\">" +this->label+  "</text>";
@@ -219,7 +219,7 @@ void build_lines(node* root) {
 
 int main() {
 
-	string str = "(SBARQ (WHNP (WP What)) (SQ (VBZ is) (NP (NX (DT the) (<JJ average) (NNS sales) (IN of) (DT the) (NNS journals) (WHNP (WDT that)) (NX (VBP have) (NP (DT an) (NN editor)) (WHADVP (WHNP (WP$ whose) (NX (NN work) (NN type))) (VBZ is) (`` ``)))) (NP (NNP Photo)) ('' ''))) (. ?))";
+	string str = "(SBARQ (WHNP (WRB How) (JJ much)) (SQ (VBZ is) (NP (NP (DT the) (NN track)) (NP (NNP Fast) (PP (IN As) (NP (DT a) (NNP Shark)))))) (. ?))";
 	/*string str = "(S (S (VP (VB Show) (NP (DT all) (NX (NN card) (NN type) (NNS codes))))) (. .))";*/
 	node root(str, 1);
 	build_tree(&root);
