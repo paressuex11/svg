@@ -229,9 +229,10 @@ int main() {
 		string str = "";
 		getline(input, str);
 		if (str == "") continue;
-		string filename = "C:/Users/11385/Desktop/a" + to_string(i) + ".html";
+		string filename = "C:/Users/11385/Desktop/myproject/a" + to_string(i) + ".html";
 		freopen(filename.c_str(), "w", stdout);
 		
+
 		/*string str = "(S (S (VP (VB Show) (NP (DT all) (NX (NN card) (NN type) (NNS codes))))) (. .))";*/
 		node root(str, 1);
 		build_tree(&root);
@@ -257,3 +258,5 @@ int main() {
 	system("pause");
 	return 0;
 }
+
+// 
